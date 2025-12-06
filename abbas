@@ -1,0 +1,382 @@
+import os
+import psutil
+import multiprocessing
+import threading
+import random
+import stat
+
+created_files = []
+created_folders = {}
+
+
+# Main Menu
+def main_menu():
+    while True:
+        print("\nMAIN MENU")
+        print("1. User Management")
+        print("2. Service Management")
+        print("3. Process Management")
+        print("4. Backup")
+        print("5. Exit")
+        
+        choice = input("Enter your choice (1-5): ")
+        
+        if choice == "1":
+            user_management_menu()
+        elif choice == "2":
+            service_management_menu()
+        elif choice == "3":
+            process_management_menu()
+        elif choice == "4":
+            backup_menu()
+        elif choice == "5":
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice! Please try again.")
+
+
+# User Management Menu
+def user_management_menu():
+    while True:
+        print("\nUSER MANAGEMENT")
+        print("1. Add a User")
+        print("2. Delete a User")
+        print("3. List All Users")
+        print("4. Back to Main Menu")
+        
+        choice = input("Enter your choice (1-4): ")
+        
+        if choice == "1":
+            username = input("Enter the username to add: ")
+            os.system(f"net user {username} /add")
+        elif choice == "2":
+            username = input("Enter the username to delete: ")
+            os.system(f"net user {username} /delete")
+        elif choice == "3":
+            print("List of all users:")
+            os.system("net user")
+        elif choice == "4":
+            break
+        else:
+            print("Invalid choice! Please try again.")
+
+
+# Service Management Menu
+# Service Management Menu
+def service_management_menu():
+    global created_files
+    global created_folders
+    while True:
+        print("\nFILE AND FOLDER MANAGEMENT")
+        print("1. Create a File")
+        print("2. Create a Folder")
+        print("3. Delete a File")
+        print("4. Delete a Folder")
+        print("5. Show All Files and Folders")
+        print("6. Write to a File")
+        print("7. Set File Permissions")
+        print("8. Back to Main Menu")
+        
+        choice = input("Enter your choice (1-8): ").strip()
+        
+        if choice == "1":
+            file_name = input("Enter the file name to create (e.g., file.txt): ")
+            folder_name = input("Enter the folder name to create the file in: ")
+            if folder_name not in created_folders:
+                os.makedirs(folder_name, exist_ok=True)
+                created_folders[folder_name] = []
+            file_path = os.path.join(folder_name, file_name)
+            with open(file_path, 'w') as file:
+                file.write("")
+            created_files.append((file_name, folder_name))
+            print(f"File '{file_name}' created in '{folder_name}'.")
+        
+        elif choice == "2":
+            folder_name = input("Enter the folder name to create: ")
+            os.makedirs(folder_name, exist_ok=True)
+            created_folders[folder_name] = []
+            print(f"Folder '{folder_name}' created.")
+        
+        elif choice == "3":
+            file_name = input("Enter the file name to delete: ")
+            folder_name = input("Enter folder name: ")
+            file_path = os.path.join(folder_name, file_name)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                created_files = [f for f in created_files if f != (file_name, folder_name)]
+                print("Deleted the file successfully.")
+            else:
+                print("File does not exist.")
+        
+        elif choice == "4":
+            folder_name = input("Enter the folder name to delete: ")
+            if os.path.exists(folder_name):
+                os.rmdir(folder_name)
+                created_folders.pop(folder_name, None)
+                print(f"Folder '{folder_name}' deleted.")
+            else:
+                print("Folder does not exist.")
+        
+        elif choice == "5":
+            print("\nShowing all created files and folders:")
+            if not created_files and not created_folders:
+                print("No files or folders have been created yet.")
+            else:
+                if created_files:
+                    print("Files:")
+                    for file_name, folder_name in created_files:
+                        print(f"  - {file_name} (in {folder_name})")
+                if created_folders:
+                    print("Folders:")
+                    for folder_name in created_folders.keys():
+                        print(f"  - {folder_name}")
+        
+        elif choice == "6":
+            folder_name = input("Enter the folder name of the file: ")
+            file_name = input("Enter the file name to write to: ")
+            file_path = os.path.join(folder_name, file_name)
+            if os.path.exists(file_path):
+                content = input("Enter content to write to the file: ")
+                with open(file_path, 'a') as file:
+                    file.write(content)
+                print("Content written to the file.")
+            else:
+                print("File does not exist.")
+        
+        elif choice == "7":
+            folder_name = input("Enter the folder name of the file: ")
+            file_name = input("Enter the file name to change permissions: ")
+            file_path = os.path.join(folder_name, file_name)
+            if os.path.exists(file_path):
+                print("\nSet permissions:")
+                print("1. Read-only")
+                print("2. Write-only")
+                print("3. Execute-only")
+                print("4. Read and Write")
+                print("5. Read, Write, and Execute")
+                perm_choice = input("Enter your choice (1-5): ")
+
+                if perm_choice == "1":
+                    os.chmod(file_path, stat.S_IREAD)
+                    print("Set to Read-only.")
+                elif perm_choice == "2":
+                    os.chmod(file_path, stat.S_IWRITE)
+                    print("Set to Write-only.")
+                elif perm_choice == "3":
+                    os.chmod(file_path, stat.S_IEXEC)
+                    print("Set to Execute-only.")
+                elif perm_choice == "4":
+                    os.chmod(file_path, stat.S_IREAD | stat.S_IWRITE)
+                    print("Set to Read and Write.")
+                elif perm_choice == "5":
+                    os.chmod(file_path, stat.S_IREAD | stat.S_IWRITE | stat.S_IEXEC)
+                    print("Set to Read, Write, and Execute.")
+                else:
+                    print("Invalid choice for permissions.")
+            else:
+                print("File does not exist.")
+        
+        elif choice == "8":
+            break
+        
+        else:
+            print("Invalid choice! Please try again.")
+
+
+
+# Process Management Menu
+def process_management_menu():
+    while True:
+        print("\nPROCESS MANAGEMENT")
+        print("1. View Running Processes")
+        print("2. Kill a Process")
+        print("3. Open a Specific Process")
+        print("4. Array Sorting via Thread")
+        print("5. Matrix Operations")
+        print("6. Back to Main Menu")
+        
+        choice = input("Enter your choice (1-6): ")
+        
+        if choice == "1":
+            print("\nList of running processes:")
+            for proc in psutil.process_iter(['pid', 'name']):
+                print(proc.info)
+        
+        elif choice == "2":
+            pid = input("Enter the PID of the process to kill: ")
+            try:
+                os.system(f"taskkill /PID {pid} /F")
+                print(f"Process {pid} terminated.")
+            except Exception as e:
+                print(f"Could not terminate process {pid}. Error: {e}")
+        
+        elif choice == "3":
+            while True:
+                print("\nSELECT A PROCESS TO OPEN")
+                print("1. Google Chrome")
+                print("2. Microsoft Edge")
+                print("3. Notepad")
+                print("4. VS Code")
+                print("5. Back to Process Management Menu")
+                
+                sub_choice = input("Enter your choice (1-6): ")
+                
+                if sub_choice == "1":
+                    os.system("start chrome")
+                    print("Google Chrome opened.")
+                elif sub_choice == "2":
+                    os.system("start msedge")
+                    print("Microsoft Edge opened.")
+                elif sub_choice == "3":
+                    os.system("notepad")
+                    print("Notepad opened.")
+                elif sub_choice == "4":
+                    os.system("code")
+                    print("VS Code opened.")
+                elif sub_choice == "5":
+                    break
+                else:
+                    print("Invalid choice! Please try again.")
+        
+        elif choice == "4":
+            array_sorting_menu()
+        elif choice == "5":
+            matrix_operations_menu()
+        elif choice == "6":
+            break
+        else:
+            print("Invalid choice! Please try again.")
+
+
+def array_sorting_menu():
+    print("\nARRAY SORTING VIA THREAD")
+    
+    def sort_array():
+        array = input("Enter a list of numbers separated by spaces to sort: ")
+        try:
+            nums = [int(x) for x in array.split()]
+            nums.sort()
+            print(f"Sorted Array: {nums}")
+        except ValueError:
+            print("Invalid input. Please enter numbers only.")
+
+    # Thread for sorting
+    thread = threading.Thread(target=sort_array)
+    thread.start()
+    thread.join()
+
+
+# Matrix Operations Menu
+def matrix_operations_menu():
+    while True:
+        print("\nMATRIX OPERATIONS MENU")
+        print("1. Add Matrices")
+        print("2. Subtract Matrices")
+        print("3. Multiply Matrices")
+        print("4. Divide Matrices")
+        print("5. Back to Main Menu")
+        
+        choice = input("Choose an operation (1-5): ")
+        
+        if choice in ["1", "2", "3", "4"]:
+            rows = int(input("Enter number of rows for matrices: "))
+            cols = int(input("Enter number of columns for matrices: "))
+            
+            # Create random matrices
+            matrix_a = [[random.randint(1, 10) for _ in range(cols)] for _ in range(rows)]
+            matrix_b = [[random.randint(1, 10) for _ in range(cols)] for _ in range(rows)]
+
+            print("\nMatrix A:")
+            for row in matrix_a:
+                print(row)
+
+            print("\nMatrix B:")
+            for row in matrix_b:
+                print(row)
+
+            # Choose a thread for operation
+            if choice == "1":
+                thread = threading.Thread(target=add_matrices, args=(matrix_a, matrix_b))
+            elif choice == "2":
+                thread = threading.Thread(target=subtract_matrices, args=(matrix_a, matrix_b))
+            elif choice == "3":
+                thread = threading.Thread(target=multiply_matrices, args=(matrix_a, matrix_b))
+            elif choice == "4":
+                thread = threading.Thread(target=divide_matrices, args=(matrix_a, matrix_b))
+
+            thread.start()
+            thread.join()
+        elif choice == "5":
+            break
+        else:
+            print("Invalid choice! Please try again.")
+
+
+# Matrix Operations
+def add_matrices(matrix_a, matrix_b):
+    result = [[matrix_a[i][j] + matrix_b[i][j] for j in range(len(matrix_a[0]))] for i in range(len(matrix_a))]
+    print("\nAddition Result:")
+    for row in result:
+        print(row)
+
+
+def subtract_matrices(matrix_a, matrix_b):
+    result = [[matrix_a[i][j] - matrix_b[i][j] for j in range(len(matrix_a[0]))] for i in range(len(matrix_a))]
+    print("\nSubtraction Result:")
+    for row in result:
+        print(row)
+
+
+def multiply_matrices(matrix_a, matrix_b):
+    result = [[sum(matrix_a[i][k] * matrix_b[k][j] for k in range(len(matrix_b))) for j in range(len(matrix_b[0]))] for i in range(len(matrix_a))]
+    print("\nMultiplication Result:")
+    for row in result:
+        print(row)
+
+
+def divide_matrices(matrix_a, matrix_b):
+    try:
+        result = [[matrix_a[i][j] / matrix_b[i][j] if matrix_b[i][j] != 0 else float('inf') for j in range(len(matrix_a[0]))] for i in range(len(matrix_a))]
+        print("\nDivision Result:")
+        for row in result:
+            print(row)
+    except ZeroDivisionError:
+        print("\nDivision Error: Division by zero encountered in matrix operation.")
+
+
+# Backup Menu
+def backup_menu():
+    while True:
+        print("\nBACKUP MENU")
+        print("1. Create a Backup")
+        print("2. Restore a Backup")
+        print("3. Back to Main Menu")
+        
+        choice = int(input("Enter your choice (1-3): "))
+        
+        if choice == 1:
+            path= input("Enter the directory/file to backup: ")
+            destination = input("Enter the backup destination \nC:\\backup\\backup.zip): ")
+            try:
+                os.system(f"powershell Compress-Archive -Path {path} -DestinationPath {destination}")
+                print(f"Backup successfully created at {destination}.")
+            except Exception as e:
+                print(f"Error creating backup: {e}")
+        elif choice == 2:
+            backup_file = input("Enter the backup file path: ")
+            restore_location = input("Enter the directory to restore to: ")
+            try:
+                os.system(f"powershell Expand-Archive -Path {backup_file} -DestinationPath {restore_location}")
+                print(f"Backup restored to {restore_location}.")
+            except Exception as e:
+                print(f"Error restoring backup:{e} ")       
+        elif choice == 3:
+            break
+        else:
+            print("Invalid choice! Please try again.")
+
+
+# Entry point
+if _name_ == "_main_":
+    main_menu()

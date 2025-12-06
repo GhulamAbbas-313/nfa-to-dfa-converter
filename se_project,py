@@ -1,0 +1,182 @@
+import java.util.Scanner;
+
+// Customer Class
+class Customer {
+    private String name;
+    private String cellNumber;
+
+    // Constructor
+    public Customer(String name, String cellNumber) {
+        this.name = name;
+        this.cellNumber = cellNumber;
+    }
+
+    // Display Customer Info
+    public void displayCustomerInfo() {
+        System.out.println("Customer Name: " + name);
+        System.out.println("Customer Cell: " + cellNumber);
+    }
+}
+
+// Product Class
+class Product {
+    private int productNumber;
+    private int quantity;
+
+    // Constructor
+    public Product(int productNumber, int quantity) {
+        this.productNumber = productNumber;
+        this.quantity = quantity;
+    }
+
+    // Check if product exceeds the limit
+    public void checkProductLimit(int cityNumber) {
+        if (cityNumber == 1 && productNumber == 2 && quantity > 5) {
+            System.out.println("We don't have enough quantity of CBC analyzer but we will arrange it for you from our head office.");
+        } else if (cityNumber == 3 && productNumber == 2 && quantity > 7) {
+            System.out.println("We don't have enough quantity of CBC analyzer but we will arrange it for you from our head office.");
+        } else if (cityNumber == 3 && productNumber == 1 && quantity > 15000) {
+            System.out.println("We don't have enough quantity of blood collection tubes but we will arrange it for you from our head office.");
+        } else {
+            System.out.println("Your order has been placed.");
+        }
+    }
+
+    // Display Product Info
+    public void displayProductInfo() {
+        System.out.println("Product: " + productNumber + " (Quantity: " + quantity + ")");
+    }
+}
+
+// City Class
+class City {
+    private int cityNumber;
+    private String postalCode;
+
+    // Constructor
+    public City(int cityNumber, String postalCode) {
+        this.cityNumber = cityNumber;
+        this.postalCode = postalCode;
+    }
+
+    // Display City Info
+    public void displayCityInfo() {
+        System.out.println("City: " + cityNumber + " (Postal Code: " + postalCode + ")");
+    }
+
+    // Provide city number for internal checks
+    public int provideCityNumber() {
+        return cityNumber;
+    }
+}
+
+// Main medpro Class
+public class medpro {
+
+    // Main method
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Taking Customer information
+        System.out.print("Enter your name: ");
+        String customerName = sc.nextLine();
+        
+        System.out.print("Enter your cell number: ");
+        String customerCell = sc.nextLine();
+        
+        Customer customer = new Customer(customerName, customerCell);
+
+        // Taking City information
+        int cityNumber = 0;
+        for (int i = 0; i < 3; i++) { // 3 attempts to enter a valid city
+            System.out.println("From which city you are ordering?");
+            System.out.print("1. Lahore, 2. Karachi, 3. Islamabad: ");
+            if (sc.hasNextInt()) {
+                cityNumber = sc.nextInt();
+                if (cityNumber == 1 || cityNumber == 2 || cityNumber == 3) {
+                    break; // Valid input, exit the loop
+                } else {
+                    System.out.println("Invalid input. Please enter 1, 2, or 3.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number (1, 2, or 3).");
+                sc.next(); // Clear the invalid input
+            }
+
+            // If this is the last attempt, end the program
+            if (i == 2) {
+                System.out.println("You have exceeded the number of attempts. Exiting the system.");
+                sc.close();
+                return; // End the program
+            }
+        }
+
+        sc.nextLine(); // Consume the newline left from nextInt()
+
+        System.out.print("Enter city postal code: ");
+        String postalCode = sc.nextLine();
+        
+        City city = new City(cityNumber, postalCode);
+
+        // Taking Product information
+        int productNumber = 0;
+        for (int i = 0; i < 3; i++) { // 3 attempts to enter a valid product
+            System.out.println("Which product do you want to order?");
+            System.out.print("1. Blood collection tubes, 2. CBC analyzer, 3. Surgical gloves: ");
+            if (sc.hasNextInt()) {
+                productNumber = sc.nextInt();
+                if (productNumber == 1 || productNumber == 2 || productNumber == 3) {
+                    break; // Valid input, exit the loop
+                } else {
+                    System.out.println("Invalid input. Please enter 1, 2, or 3.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number (1, 2, or 3).");
+                sc.next(); // Clear the invalid input
+            }
+
+            // If this is the last attempt, end the program
+            if (i == 2) {
+                System.out.println("You have exceeded the number of attempts. Exiting the system.");
+                sc.close();
+                return; // End the program
+            }
+        }
+
+        System.out.print("Enter quantity: ");
+        int quantity = sc.nextInt();
+        
+        Product product = new Product(productNumber, quantity);
+
+        // Check product limits based on city and product information
+        product.checkProductLimit(city.provideCityNumber());
+
+        // Display Customer, City, and Product Information
+        System.out.println("\nOrder details:");
+        customer.displayCustomerInfo();
+        city.displayCityInfo();
+        product.displayProductInfo();
+
+        System.out.println("Thank you for using our system. Goodbye!");
+        sc.close();
+    }
+}
+
+
+
+
+
+from tabulate import tabulate
+
+table_data =[
+    ["Product_ID", "Product_Name", "Stock","Max_Orderlimit","Price"],
+    ["1", "CBC Analyzer", "50", "5", "10000"],
+    ["2", " Blood Collection Tube", "50000", "12000", "50"],
+    ["3", "Blood Pressure Monitor", "10000", "10000", "2000 "],
+    ["4", "Surgical Gloves", "1000", "20", "500"]
+]
+print(tabulate(table_data, headers="firstrow",tablefmt="psql"))
+
+user=input("")
+
+

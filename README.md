@@ -1,6 +1,8 @@
 # NFA-ε to DFA Converter
 
-A comprehensive PyQt5-based application for converting Non-deterministic Finite Automata with epsilon transitions (NFA-ε) to Deterministic Finite Automata (DFA).
+**University Theory of Automata Project**
+
+A comprehensive PyQt5-based application for converting Non-deterministic Finite Automata with epsilon transitions (NFA-ε) to Deterministic Finite Automata (DFA). This project demonstrates practical implementation of formal language concepts taught in Theory of Computation/Automata courses.
 
 ## Features
 
@@ -31,7 +33,7 @@ A comprehensive PyQt5-based application for converting Non-deterministic Finite 
 
 ### Step 1: Clone Repository
 ```bash
-git clone https://github.com/yourusername/nfa-to-dfa-converter.git
+git clone https://github.com/GhulamAbbas-313/nfa-to-dfa-converter.git
 cd nfa-to-dfa-converter
 ```
 
@@ -179,7 +181,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Author
 
-Created by: **GhulamAbbas-313**
+Created by: **Ghulam Abbas** (GhulamAbbas-313)  
+**University Project:** Theory of Automata/Computation
 
 ## Acknowledgments
 
